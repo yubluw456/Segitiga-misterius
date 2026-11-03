@@ -1,0 +1,38 @@
+name: Render Video
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Prepare Remotion browser
+        run: npx remotion browser ensure
+
+      - name: Render MP4
+        run: |
+          mkdir -p out
+          npx remotion render index.ts SegitigaMisterius out/video.mp4
+
+      - name: Upload video
+        uses: actions/upload-artifact@v4
+        with:
+          name: video-segitiga-misterius
+          path: out/video.mp4
